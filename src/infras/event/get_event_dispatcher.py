@@ -1,0 +1,18 @@
+from src.infras.event.event_dispatcher import AsyncEventDispatcher
+from src.app.event.event_dispatcher import EventDispatcher
+from src.infras.event.handlers.order_handler import send_email_for_order
+from src.infras.event.handlers.user_handler import send_email_for_password_change
+
+from src.domain.events.order import OrderCreated
+from src.domain.events.user import PasswordChangedEvent
+
+
+# Composition root of event dispatcher
+dispatcher: EventDispatcher = AsyncEventDispatcher()
+dispatcher.subscribe(OrderCreated, send_email_for_order)
+dispatcher.subscribe(PasswordChangedEvent, send_email_for_password_change)
+
+
+def get_event_dispatcher() -> EventDispatcher: 
+    """Provide the global event dispatcher instance"""
+    return dispatcher
