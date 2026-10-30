@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     # Database Configuration
     DATABASE_URL: str
 
+    # Redis Configuration
+    REDIS_URL: str = "redis://localhost:6379/0"
+
     @field_validator("FE_URL", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> List[str]:

@@ -6,11 +6,24 @@ from src.core.settings import settings
 from src.api.routes import auth_route, user_route, order_route
 from src.api.errors import setup_error_handler
 from src.core.middleware import LoggingMiddleware
+from src.infras.event.get_event_dispatcher import get_event_dispatcher, RedisEventDispatcher
 
 app = FastAPI(
     title=settings.SYS_NAME,
     version=settings.VERSION,
 )
+
+@app.on_event("startup")
+async def startup_event():
+    dispatcher = get_event_dispatcher()
+    if isinstance(dispatcher, RedisEventDispatcher):
+        await dispatcher.start_listening()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    dispatcher = get_event_dispatcher()
+    if isinstance(dispatcher, RedisEventDispatcher):
+        await dispatcher.stop()
 
 # origin
 origins: list[str] = []
