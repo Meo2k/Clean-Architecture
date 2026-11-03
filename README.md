@@ -91,3 +91,13 @@ downgrade
 ```bash
 alembic downgrade -1
 ```
+
+docker compose up --build -d
+sudo docker compose up --build -d
+
+
+docker stop clean_arch_api_1
+sudo docker start clean_arch_api_1
+
+
+python3 scripts/verify_load_balancer.py
