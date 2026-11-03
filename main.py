@@ -8,6 +8,7 @@ from src.core.settings import settings
 from src.api.routes import auth_route, user_route, order_route
 from src.api.errors import setup_error_handler
 from src.core.middleware import LoggingMiddleware
+from prometheus_fastapi_instrumentator import Instrumentator, metrics
 
 # Identify this specific instance (useful for verifying Load Balancing)
 SERVER_ID = os.getenv("SERVER_ID", socket.gethostname())
@@ -16,6 +17,18 @@ app = FastAPI(
     title=settings.SYS_NAME,
     version=settings.VERSION,
 )
+
+# Expose Prometheus metrics at /metrics
+instrumentator = Instrumentator(
+    should_group_status_codes=False,
+    should_ignore_untemplated=True,
+    excluded_handlers=["/metrics"],
+)
+instrumentator.add(metrics.requests())
+instrumentator.add(metrics.latency())
+instrumentator.instrument(app).expose(app, endpoint="/metrics", tags=["Monitoring"])
+
+
 
 
 # origin

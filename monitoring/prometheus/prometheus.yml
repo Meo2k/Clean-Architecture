@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 3s
+  evaluation_interval: 3s
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Scrape FastAPI instances
+  - job_name: "fastapi_cluster"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["api_1:8000"]
+        labels:
+          instance_name: "api_instance_1"
+      - targets: ["api_2:8000"]
+        labels:
+          instance_name: "api_instance_2"

@@ -26,6 +26,15 @@ async def test_health_check_endpoint():
 
 
 @pytest.mark.asyncio
+async def test_metrics_endpoint():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        response = await client.get("/metrics")
+        assert response.status_code == 200
+        assert "http_request_duration_seconds" in response.text or "http_requests_total" in response.text or "process_cpu_seconds_total" in response.text
+
+
+@pytest.mark.asyncio
 async def test_update_profile_route_put_method():
     uow = FakeUnitOfWork()
     user = User.create(
